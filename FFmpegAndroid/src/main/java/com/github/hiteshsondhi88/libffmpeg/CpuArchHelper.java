@@ -4,13 +4,26 @@ import android.os.Build;
 
 class CpuArchHelper {
 
-    static CpuArch getCpuArch() {
-        // check if device is x86
-        if (Build.CPU_ABI.equals(getx86CpuAbi())) {
+    @SuppressWarnings("deprecation") static CpuArch getCpuArch() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            for (String abi : Build.SUPPORTED_ABIS) {
+                CpuArch arch = checkABI(abi);
+                if (arch != CpuArch.NONE) return arch;
+            }
+        } else {
+            CpuArch arch = checkABI(Build.CPU_ABI);
+            if (arch != CpuArch.NONE) return arch;
+            return checkABI(Build.CPU_ABI2);
+        }
+        return CpuArch.NONE;
+    }
+
+    private static CpuArch checkABI(String abi) {
+        if (abi.equals(getx86CpuAbi())) {
             return CpuArch.x86;
         } else {
             // check if device is armeabi
-            if (Build.CPU_ABI.equals(getArmeabiv7CpuAbi())) {
+            if (abi.equals(getArmeabiv7CpuAbi())) {
                 ArmArchHelper cpuNativeArchHelper = new ArmArchHelper();
                 String archInfo = cpuNativeArchHelper.cpuArchFromJNI();
                 // check if device is arm v7
