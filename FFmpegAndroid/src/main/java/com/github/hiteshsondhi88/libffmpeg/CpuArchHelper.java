@@ -22,6 +22,10 @@ class CpuArchHelper {
         if (abi.equals(getx86CpuAbi())) {
             return CpuArch.x86;
         } else {
+            // check if device is arm64-v8a
+            if(abi.equals(getArm64v8aCpuAbi())) {
+                return CpuArch.ARM64_V8A;
+            }
             // check if device is armeabi
             if (abi.equals(getArmeabiv7CpuAbi())) {
                 ArmArchHelper cpuNativeArchHelper = new ArmArchHelper();
@@ -37,6 +41,10 @@ class CpuArchHelper {
             }
         }
         return CpuArch.NONE;
+    }
+
+    private static String getArm64v8aCpuAbi() {
+        return "arm64-v8a";
     }
 
     static String getx86CpuAbi() {
